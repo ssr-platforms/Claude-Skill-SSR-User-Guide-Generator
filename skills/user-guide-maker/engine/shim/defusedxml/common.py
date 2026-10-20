@@ -1,0 +1,2 @@
+class DefusedXmlException(ValueError):
+    pass

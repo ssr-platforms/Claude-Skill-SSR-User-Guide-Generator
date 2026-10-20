@@ -1,0 +1,14 @@
+{
+  "name": "ssr-userguide-maker",
+  "description": "Split Second Research tools for Claude Code: step-by-step PowerPoint user guides built from a real test.",
+  "owner": {
+    "name": "Split Second Research"
+  },
+  "plugins": [
+    {
+      "name": "userguide-maker",
+      "source": "./",
+      "description": "Step-by-step PowerPoint user guides built from a real test: give it the Test to clone and the Test to populate."
+    }
+  ]
+}

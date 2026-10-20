@@ -1,0 +1,7 @@
+{
+  "name": "userguide-maker",
+  "version": "1.0.0",
+  "description": "Builds a step-by-step PowerPoint user guide for a Split Second Research platform by cloning one test into another in the real editor and screenshotting every step, in the house User Guide template.",
+  "author": { "name": "Split Second Research" },
+  "keywords": ["user-guide", "powerpoint", "documentation", "imprint", "impact", "screenshots"]
+}
