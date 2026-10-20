@@ -15,7 +15,35 @@ functions (Advanced, history rollback, the AI assistant) come last.
 
 ## Install
 
-From a folder (this one), in a terminal:
+Check the [Requirements](#requirements) first. Then install from GitHub, inside a Claude Code
+session:
+
+```
+/plugin marketplace add ssr-platforms/Claude-Skill-SSR-User-Guide-Generator
+/plugin install userguide-maker@ssr-userguide-maker
+```
+
+Or from a terminal:
+
+```bash
+claude plugin marketplace add ssr-platforms/Claude-Skill-SSR-User-Guide-Generator
+claude plugin install userguide-maker@ssr-userguide-maker
+```
+
+Restart Claude Code, or run `/reload-plugins`. Then check that
+`/userguide-maker:make-user-guide` shows up when you type `/`.
+
+**Update** to the latest version:
+
+```
+/plugin marketplace update ssr-userguide-maker
+```
+
+**Uninstall:** `/plugin uninstall userguide-maker@ssr-userguide-maker`
+
+### Install from a local folder (for developing the plugin)
+
+Point the marketplace at a clone of this repository instead:
 
 ```bash
 # WSL / Linux / macOS
@@ -26,15 +54,8 @@ claude plugin marketplace add "E:\S4 Platforms\claude\userguide-maker"
 claude plugin install userguide-maker@ssr-userguide-maker
 ```
 
-Or inside a Claude Code session: `/plugin marketplace add <the folder>`, then
-`/plugin install userguide-maker@ssr-userguide-maker`. A plugin installed from a folder is read
-from that folder, so edits here reach every session after `/reload-plugins`.
-
-If this folder is pushed to a GitHub repository, others install it with:
-
-```
-/plugin install userguide-maker --marketplace <owner>/<repo>
-```
+Claude Code reads the plugin straight from that folder. Run `/reload-plugins` and your edits
+reach every session.
 
 ## Use
 
