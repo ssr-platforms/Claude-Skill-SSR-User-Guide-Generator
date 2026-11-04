@@ -11,7 +11,7 @@
 // matched by CLASS_RE, and the box [x, y, w, h] in CSS px of the 1600x900 viewport.
 const fs = require('fs');
 const path = require('path');
-const { open, W } = require('./browser');
+const { open, W, checkUser } = require('./browser');
 
 const SELECTOR = [
   'button', 'a', 'input', 'select', 'textarea', 'label', 'img', 'iframe', 'h1', 'h2', 'h3', 'h4', 'li', 'ol', 'tr',
@@ -75,7 +75,8 @@ async function session(run, dumpFile) {
   return { ctx, page, snap, warn, controls, extra, finish };
 }
 
-// Opens url, spending the one-time sign-in token in the work folder if there is one.
+// Opens url, spending the one-time sign-in token in the work folder if there is one, and checks
+// the session belongs to the guide user (Joe Bloggs, never root: see browser.js).
 async function signIn(page, url, { okPath, wait = 5000 } = {}) {
   const tokenFile = path.join(W, '.token');
   let target = url;
@@ -88,6 +89,7 @@ async function signIn(page, url, { okPath, wait = 5000 } = {}) {
   if ((okPath && !page.url().includes(okPath)) || /\/login\b/i.test(page.url())) {
     throw new Error('Not signed in (landed on ' + page.url() + '). Mint a sign-in token: see the platform profile.');
   }
+  await checkUser(page);
 }
 
 // Reads a Pinia store's state (read-only).
@@ -118,4 +120,4 @@ const toHex8 = (page, colour) => page.evaluate((c) => {
   return h(r) + h(g) + h(b) + h(a * 255);
 }, colour);
 
-module.exports = { config, session, signIn, readStore, dump, toHex8, W };
+module.exports = { config, session, signIn, checkUser, readStore, dump, toHex8, W };

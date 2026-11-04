@@ -333,6 +333,11 @@ const SEARCH_TYPES = ['Product', 'Category', 'Variant'];
       }
       await closePicker();
       for (const n of fr.numbers) await setNumber(numberAfter(n.label), n.value);
+      extra.frameBoxes = {};                         // where the guide's callouts land
+      for (const label of ['Top depth', 'Eye level']) {
+        const b = await numberAfter(label).boundingBox().catch(() => null);
+        if (b) extra.frameBoxes[label] = [b.x, b.y, b.width, b.height].map(Math.round);
+      }
       await snap('frame-done');
       if (fr.deviceDepth.tablet != null || fr.deviceDepth.mobile != null) warn('the Test to clone sets its own top depth on tablet or mobile — not copied');
     }

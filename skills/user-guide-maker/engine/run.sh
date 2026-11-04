@@ -15,7 +15,7 @@
 # profile into $GUIDE_DIR/build — edit those copies freely, `init` never overwrites them
 # (pass --force to refresh) — and records the inputs in $GUIDE_DIR/build/guide.env.
 #
-# Overridable: GUIDE_DIR, TEMPLATE, WIN_WORK, NODE_EXE, CHROME_EXE, PYTHON, APP_URL.
+# Overridable: GUIDE_DIR, TEMPLATE, WIN_WORK, NODE_EXE, CHROME_EXE, PYTHON, APP_URL, GUIDE_USER.
 set -euo pipefail
 
 ENGINE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -27,6 +27,7 @@ ENV_FILE="$BUILD/guide.env"
 if [ -f "$ENV_FILE" ]; then set -a; . "$ENV_FILE"; set +a; fi
 TEMPLATE="${TEMPLATE:-$PLUGIN_ROOT/src/Layout User Guide Template.pptx}"
 PY="${PYTHON:-python3}"
+GUIDE_USER="${GUIDE_USER:-Joe Bloggs}"   # the account the guide is captured as: never a root user
 
 die() { echo "ERROR: $*" >&2; exit 1; }
 is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
@@ -110,6 +111,7 @@ write_run() {      # write_run <dry true|false>
   "shots": $(printf '%s' "$(native "$shots")" | "$PY" -c 'import json,sys; print(json.dumps(sys.stdin.read()))'),
   "work": $(printf '%s' "$(native "$WIN_WORK")" | "$PY" -c 'import json,sys; print(json.dumps(sys.stdin.read()))'),
   "plan": $(printf '%s' "$(native "$WIN_WORK/plan.json")" | "$PY" -c 'import json,sys; print(json.dumps(sys.stdin.read()))'),
+  "user": $(printf '%s' "$GUIDE_USER" | "$PY" -c 'import json,sys; print(json.dumps(sys.stdin.read()))'),
   "dry": $1 }
 JSON
   echo "$shots"
@@ -129,7 +131,7 @@ node_run() {       # WSL's interop sometimes fails to start a Windows program (U
 cmd_preflight() {
   need_init
   local ok=1
-  echo "platform $PLATFORM · clone $CLONE · populate $POPULATE · app $APP_URL"
+  echo "platform $PLATFORM · clone $CLONE · populate $POPULATE · app $APP_URL · user $GUIDE_USER (not root)"
   [ -f "$TEMPLATE" ] && echo "ok   template: $TEMPLATE" || { echo "FAIL template not found: $TEMPLATE"; ok=0; }
   [ -n "$NODE_EXE" ] && [ -e "$NODE_EXE" ] && echo "ok   node: $NODE_EXE" || { echo "FAIL node not found (set NODE_EXE)"; ok=0; }
   "$PY" -c 'import lxml, PIL' 2>/dev/null && echo "ok   python: lxml + Pillow" || { echo "FAIL python needs lxml and Pillow: $PY -m pip install --user lxml pillow"; ok=0; }

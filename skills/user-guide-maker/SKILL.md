@@ -33,9 +33,10 @@ Profiles today: **imprint** (complete and data-driven: the two codes are all it 
 2. **Dry run first.** `run.sh capture --dry` builds the clone in the browser and closes the page without saving (the editors have no autosave — confirm that for a new platform before relying on it). Show the user the result and **ask before** the real `run.sh capture`, which saves — and on most platforms saving **publishes** the test.
 3. **The Test to populate must be blank.** The capture refuses one that is not. Never empty a test to make it pass: ask the user for a new one.
 4. **Sign-in tokens are credentials.** The editors sign in with a one-time Fluent token. Ask the user before minting one (the command is in the profile), store it only in the work folder's `.token`, and never print, log or commit it. The browser profile in the work folder keeps the session afterwards.
-5. **Look-only captures only look.** They open dialogs and cancel them: never press Save, confirm a delete or restore, apply or save a theme, or send the AI assistant a message.
-6. **Ask before anything that writes to a database** (resetting a test, minting a token, deleting history), and verify which database the command reaches first.
-7. **End links are never copied** — they belong to the reference's survey.
+5. **Capture as Joe Bloggs, never a root user.** Every guide is captured signed in as the Fluent user named **Joe Bloggs** (`GUIDE_USER` in `build/guide.env` overrides the name), whose `role` is not `root` — the guide must show what an ordinary customer sees, and that name appears in the screenshots. Mint tokens only for that user. Every script checks the signed-in user after sign-in and stops if the name differs or the role is `root`. A token does not switch an existing session: to change user, delete the work folder's browser `profile` first. If no such user exists, ask the user before creating one.
+6. **Look-only captures only look.** They open dialogs and cancel them: never press Save, confirm a delete or restore, apply or save a theme, or send the AI assistant a message.
+7. **Ask before anything that writes to a database** (resetting a test, minting a token, deleting history), and verify which database the command reaches first.
+8. **End links are never copied** — they belong to the reference's survey.
 
 ## Workflow
 
@@ -64,6 +65,7 @@ Run everything from the platform's repository root; the guide lives in `docs/use
 | Symptom | Do this |
 |---|---|
 | *Not signed in* | the session expired: the profile's sign-in section (ask before minting a token) |
+| *Signed in as "…", not "Joe Bloggs"* / *is a root user* | the session belongs to someone else: delete the work folder's browser `profile`, then mint a token for Joe Bloggs (non-root) |
 | `read` finds no store data | the store id changed: check the editor's source, update the profile's `read-test.js` |
 | products **missing** from the gallery | the Test to populate's survey cannot see those images: pick a target in the same Fluent project, or ask the user to add the images |
 | a control is not found during capture | the UI changed: find the new label with a dump (`q.py`) and fix the selector in `build/capture-build.js` |

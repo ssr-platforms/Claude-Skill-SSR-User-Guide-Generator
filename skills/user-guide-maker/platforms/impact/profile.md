@@ -31,6 +31,18 @@ icon (`Crosscut`) and its strengths, and the welcome text. Read them from the Te
 
 ## Sign-in (ask the user before minting a token)
 
+Sign in as **Joe Bloggs**, never a root user (SKILL.md rule 5; the scripts check it and stop
+otherwise). Find that user's id and confirm the role is not `root` (read-only):
+
+```bash
+docker exec -w /app impact php artisan tinker --execute='echo json_encode(\App\Models\User::where("name","Joe Bloggs")->get(["id","name","role","logout_at"])).PHP_EOL;'
+```
+
+Exactly one row, `role` not `root`, `logout_at` null: its `id` is `<USER>` below. No row (or only a
+root one) → stop and ask the user; never borrow another account. A token does not replace an
+existing session, so if the browser profile is signed in as someone else, delete
+`$WIN_WORK/profile` before spending the token.
+
 ```bash
 docker exec -w /app impact php artisan tinker --execute='$t=\Illuminate\Support\Str::random(24); \App\Models\RedirectToken::create(["token"=>$t,"user_id"=><USER>,"component_id"=><COMPONENT>,"used"=>false]); echo "TOKEN=".$t.PHP_EOL;' \
   | grep -o 'TOKEN=[A-Za-z0-9]*' | cut -d= -f2 | tr -d '\n' > "$WIN_WORK/.token"

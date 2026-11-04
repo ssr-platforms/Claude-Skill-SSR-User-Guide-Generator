@@ -36,4 +36,31 @@ async function open({ width = 1600, height = 900, scale = 2 } = {}) {
   return { ctx, page, W };
 }
 
-module.exports = { open, W, chromePath };
+// The account every guide is captured as: its name shows in the screenshots (Recent changes,
+// Analysis, the account menu) and its role decides which panels appear, so the guide must show
+// what an ordinary customer sees. run.json's "user" (GUIDE_USER in guide.env) overrides the name;
+// the account must never be root.
+const DEFAULT_USER = 'Joe Bloggs';
+function guideUser() {
+  try { return JSON.parse(fs.readFileSync(path.join(W, 'run.json'), 'utf8')).user || DEFAULT_USER; } catch { return DEFAULT_USER; }
+}
+
+// Throws unless the signed-in user is the guide user and is not root. Reads the Inertia page
+// props: IMPRINT passes `user_info`, IMPACT shares `auth.user`.
+async function checkUser(page, expected = guideUser()) {
+  const who = await page.evaluate(() => {
+    const app = document.querySelector('#app');
+    let p = app?.__vue_app__?.config?.globalProperties?.$page?.props;
+    if (!p && app?.dataset?.page) { try { p = JSON.parse(app.dataset.page).props; } catch { /* not Inertia */ } }
+    const u = p && (p.user_info || p.auth?.user);
+    return u ? { name: u.name ?? null, role: u.role ?? null } : null;
+  });
+  const fix = `Sign in as "${expected}" (a non-root account): delete the browser profile in ${path.join(W, 'profile')} `
+    + 'to end the current session, then mint a token for that user (see the platform profile).';
+  if (!who) throw new Error('Could not tell who is signed in (no user in the page props). ' + fix);
+  if (String(who.name).trim() !== expected) throw new Error(`Signed in as "${who.name}", not "${expected}". ` + fix);
+  if (String(who.role).toLowerCase() === 'root') throw new Error(`"${who.name}" is a root user: guides must be captured as a non-root user. ` + fix);
+  return who;
+}
+
+module.exports = { open, W, chromePath, guideUser, checkUser };

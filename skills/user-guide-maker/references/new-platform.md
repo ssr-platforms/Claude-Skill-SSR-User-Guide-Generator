@@ -15,7 +15,10 @@ Use an Explore agent on the platform's repository for the facts, with file paths
   route** for one test (e.g. `/tests/code/{code}`, `/survey/{code}`); what a test code looks like;
 - **sign-in**: the middleware on the editor routes. Most platforms take Fluent's one-time
   `?uid=` RedirectToken (`auth_fluent`); find the model, its connection and required columns
-  so the profile can say how to mint one (and the user must approve each one);
+  so the profile can say how to mint one (and the user must approve each one), always for the
+  non-root guide user Joe Bloggs (SKILL.md rule 5) — note what that user cannot see (root-only
+  panels) and leave it out of the guide; call `checkUser(page)` after any sign-in the profile
+  does itself rather than through `signIn`;
 - the **store** that holds the open test's data (Pinia: `$pinia._s.get(<id>)`; Vuex differs)
   and its top-level keys;
 - the **panels** (left rail), their exact labels, and any tour hooks (`data-ide-tour`,

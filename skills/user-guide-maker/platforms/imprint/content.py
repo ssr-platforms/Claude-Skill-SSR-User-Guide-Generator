@@ -732,9 +732,12 @@ def slides(shots):
             rows.append((f'Pick a colour, or type its code in the box{", " + eg(str(c0.get("value", "")).lstrip("#")) if c0.get("value") else ""}. Do the same for the frame’s other colours.',
                          'frame-picker.png', lambda: pad(next(e['b'] for e in C.c['frame-picker'] if e['t'] == 'input' and 'vc-' not in e.get('cls', '') and e['b'][0] > 900 and e['b'][1] > 600), 3), 'left', 880))
         if 'frame-done' in C.c:
-            rows.append((f'Set **Top depth** and **Eye level** to choose how much of each shelf’s top shows'
-                         + (f', e.g. **{nums.get("Top depth")}** and **{nums.get("Eye level")}**.' if nums else '.'),
-                         'frame-done.png', lambda: [pad(e['b'], 3) for e in C.c['frame-done'] if e['t'] == 'input' and e['b'][0] > 1500 and e['b'][2] < 60][:2], 'left', 1180))
+            fb = XT.get('frameBoxes') or {}
+            vals = [f'**{nums[k]}** for {k}' for k in ('Top depth', 'Eye level') if nums.get(k) is not None]
+            rows.append(('Set **Top depth** and **Eye level** to choose how much of each shelf\u2019s top shows'
+                         + (', e.g. ' + ' and '.join(vals) + '.' if vals else '.'),
+                         'frame-done.png', lambda: [pad(fb[k], 3) for k in ('Top depth', 'Eye level') if k in fb]
+                         or [pad(e['b'], 3) for e in C.c['frame-done'] if e['t'] == 'input' and e['b'][0] > 1500 and e['b'][2] < 60][:2], 'left', 1180))
         if post and 'post-done' in C.c:
             rows.append(('Under **Post area**, set the **Background Color** and **Shadow Color** of the uprights the same way.', 'post-done.png',
                          lambda: pad(union(C('post-done', s='Choose Background Color', nth=0), C('post-done', s='Choose Shadow Color', nth=1)), 4), 'left', 1180))

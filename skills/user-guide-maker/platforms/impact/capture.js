@@ -9,7 +9,7 @@
 // Run under WINDOWS node from the work folder (run.sh does this):
 //   node capture.js <shotsDir> [testCode]
 const fs = require('fs'), path = require('path');
-const { open, W } = require('./browser');
+const { open, W, checkUser } = require('./browser');
 
 // run.sh passes its run.json; the old form <shotsDir> [code] still works.
 const RUN = (process.argv[2] || '').endsWith('.json') ? JSON.parse(fs.readFileSync(process.argv[2], 'utf8')) : null;
@@ -63,6 +63,7 @@ const dump = (page) => page.evaluate(() => {
     await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
     await page.waitForTimeout(2500);
     if (!page.url().includes('/survey/') || /verification|not defined|login/i.test(await page.title())) throw new Error('Not signed in (landed on ' + page.url() + '). Mint a token: see PROGRESS.md.');
+    await checkUser(page);   // Joe Bloggs, not root (see browser.js)
     const skip = page.getByRole('button', { name: 'Skip tour' });
     if (await skip.isVisible().catch(() => false)) await skip.click();
     await page.locator('#tour-stage-view').getByText('Stimuli').first().click();

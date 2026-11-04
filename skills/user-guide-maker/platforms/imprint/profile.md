@@ -20,9 +20,21 @@ the whole guide (about 150 slides). Built and proven on `gnrzvKEd` → `k5FG6YFo
 ## Sign-in (ask the user before minting a token)
 
 The browser profile in the work folder keeps the session. When a run says *Not signed in*,
-the user can paste an unopened "open in IMPRINT" link (its `uid`), or approve minting one in the
-**local dev** database for their Fluent user id and the Fluent component of the Test to
-populate:
+the user can paste an unopened "open in IMPRINT" link (its `uid`) made for Joe Bloggs, or approve
+minting one in the **local dev** database for Joe Bloggs's Fluent user id and the Fluent component
+of the Test to populate.
+
+Sign in as **Joe Bloggs**, never a root user (SKILL.md rule 5; the scripts check it and stop
+otherwise). Find that user's id and confirm the role is not `root` (read-only):
+
+```bash
+docker exec -w /app imprint php artisan tinker --execute='echo json_encode(\App\Models\User::where("name","Joe Bloggs")->get(["id","name","role","logout_at"])).PHP_EOL;'
+```
+
+Exactly one row, `role` not `root`, `logout_at` null: its `id` is `<USER>` below. No row (or only a
+root one) → stop and ask the user; never borrow another account. A token does not replace an
+existing session, so if the browser profile is signed in as someone else, delete
+`$WIN_WORK/profile` before spending the token.
 
 ```bash
 # the component id: SELECT c.id FROM fluent.components c JOIN fluent.surveys s ON s.id=c.survey_id
@@ -42,10 +54,12 @@ frame, posts, price tags (currency, colours, blur), palette, corners, font, pop-
 the practice round (copied from the main round with its targets, or added like the main
 round), search type and count, exclusion, error threshold, idle timeout, inter-trial
 interval, screen text and shared strings that differ, the test flow (welcome / practice /
-main), the questionnaire and its questions, custom CSS/JS (root accounts).
+main), the questionnaire and its questions.
 
 Not cloned (reported as warnings): end links (they belong to the reference's survey), per-device
-layers / items-per-layer overrides, per-device top depth, Modal Width of screens.
+layers / items-per-layer overrides, per-device top depth, Modal Width of screens, custom CSS/JS
+(the Advanced panel is shown to root accounts only and guides are captured as non-root Joe
+Bloggs, so the Advanced slides are dropped too).
 
 ## Gotchas
 
