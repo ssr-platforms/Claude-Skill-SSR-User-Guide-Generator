@@ -33,11 +33,19 @@ claude plugin install userguide-maker@ssr-userguide-maker
 Restart Claude Code, or run `/reload-plugins`. Then check that
 `/userguide-maker:make-user-guide` shows up when you type `/`.
 
-**Update** to the latest version:
+**Update** to the latest version, from a terminal:
 
+```bash
+claude plugin update userguide-maker@ssr-userguide-maker
 ```
-/plugin marketplace update ssr-userguide-maker
-```
+
+Or inside a session: `/plugin` → **Installed** tab → **userguide-maker** → **Update now**.
+Then run `/reload-plugins` or restart Claude Code. (`/plugin marketplace update` only refreshes
+the marketplace's list; it does not update the installed plugin.)
+
+**Releasing a change:** bump `version` in `.claude-plugin/plugin.json` before pushing. Claude
+Code only updates when that number changes, so commits pushed under the same version never
+reach people who already have the plugin.
 
 **Uninstall:** `/plugin uninstall userguide-maker@ssr-userguide-maker`
 
